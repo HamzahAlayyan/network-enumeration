@@ -1,77 +1,48 @@
 # Network Enumeration Script
 
-A comprehensive Bash script for automated network reconnaissance and enumeration. Designed for penetration testing, security assessments, and educational purposes.
+A concise Bash script for automated network reconnaissance and enumeration. Designed for penetration testing, security assessments, lab exercises and educational purposes.
 
-## LEGAL DISCLAIMER
-
-**This tool is for authorized security testing only.** Unauthorized network scanning is **illegal**. Only use on:
-- Networks you own
-- Networks with written permission to test
-- Authorized lab environments
-
-## What It Does
-
-Combines multiple reconnaissance techniques:
-
-**Ping Sweep** - Identifies live hosts on a network  
-**Port Scanning** - Discover open ports and services using Nmap
-**OS Detection** - Fingerprint operating systems  
-**DNS Enumeration** - Resolve domain information  
-**WHOIS Lookup** - Identify IP ownership and registration  
-**Traceroute** - Map network path to target  
-**SSL/TLS Analysis** - Certificate enumeration  
-**Subnet Analysis** - Calculate network ranges  
-**ARP Discovery** - Local network host discovery  
+**LEGAL DISCLAIMER:** Running this script on networks you do not own/have permission to test is illegal.
 
 ## Features
 
-- **Comprehensive Scanning** - Multiple reconnaissance and enumeration techniques in one script
-- **Colored Output** - Easily readable, color-coded results
-- **Result Logging** - Automatically saves findings to a file
-- **Error Handling** - Handles missing tools and network issues
-- **Both Single Host and Network Range** - Supports IP, hostname, and CIDR notation
+**Ping Sweep** - Host discovery and availability checking  
+**Port Scanning** - Identify open ports and services using Nmap 
+**OS Detection** - Operating system and service version fingerprinting  
+**DNS Enumeration** - Domain name and reverse DNS resolution  
+**WHOIS Lookup** - IP/domain ownership and registration info  
+**Traceroute** - Network path mapping to target  
+**SSL/TLS Analysis** - Certificate information extraction  
+**Subnet Analysis** - Network range and CIDR calculations  
+**ARP Discovery** - Local network host enumeration  
+**Timestamped Reporting** - Automated scan result logging  
 
 ## Installation
 
 **Requirements:**
-- Bash 4.0+
-- Linux/Unix system (Kali, Ubuntu, macOS, etc.)
-- Nmap
-- bind-utils (dig, nslookup)
-- whois
-
-**Quick Setup:**
+- Bash 4.0+, Linux/Unix (Kali, Ubuntu, macOS, etc.)
+- Nmap, bind-utils, whois
 
 ```bash
-# Clone the repository
 git clone https://github.com/yourusername/network-enumeration.git
 cd network-enumeration
-
-# Make executable
 chmod +x network_enumeration.sh
 
-# (Optional) Install missing tools on Ubuntu/Debian
-sudo apt-get install nmap whois dnsutils traceroute
+# Install dependencies (Ubuntu/Debian)
+sudo apt-get install nmap whois dnsutils traceroute arp-scan ipcalc
 ```
 
 ## Usage
 
-**Basic Syntax:**
 ```bash
-./network_enumeration.sh <target>
-```
-
-**Examples:**
-
-```bash
-# Scan single host
+# Single host
 ./network_enumeration.sh 192.168.1.1
 
-# Scan hostname
-./network_enumeration.sh example.com
-
-# Scan entire subnet
+# Network range (CIDR)
 ./network_enumeration.sh 192.168.1.0/24
+
+# Domain name
+./network_enumeration.sh example.com
 ```
 
 ## Example Output
@@ -90,77 +61,42 @@ sudo apt-get install nmap whois dnsutils traceroute
 [+] whois is installed
 
 [*] Validating target
-[+] Target validated: 192.168.1.100
+[+] CIDR notation detected: 192.168.1.0/24
+[+] Target validated: 192.168.1.0/24
 
 [*] Ping Sweep - Checking Live Hosts
-[+] Host 192.168.1.100 is reachable
+[+] Results will be saved to: ./enum_results/enum_20240115_143022.txt
+
+[*] Ping Sweep - Checking Live Hosts
+192.168.1.1
+192.168.1.100
 
 [*] Port Scanning - Identifying Open Common Ports
-[i] Running Nmap port scan on 192.168.1.100...
-Starting Nmap 7.92 ( https://nmap.org ) at Thu Jan 15 14:30:22 2024
-Nmap scan report for 192.168.1.100
-Host is up (0.00032s latency).
-
-PORT      STATE SERVICE      VERSION
-21/tcp    open  ftp          vsftpd 3.0.2
-22/tcp    open  ssh          OpenSSH 7.4
-80/tcp    open  http         Apache httpd 2.4.6
-443/tcp   open  https        Apache httpd 2.4.6
-3306/tcp  open  mysql        MySQL 5.7.20
-
-[i] To perform a full port scan, run: nmap -sV -p- 192.168.1.100
+[i] Running Nmap port scan on 192.168.1.0/24...
 
 [*] OS Detection & Service Version Detection
-[i] Fingerprinting OS and services on 192.168.1.100...
-Running: Linux 4.4 - 5.10
-OS Details: Linux 4.15 - 5.10
-[i] OS detection may be inaccurate, results are best guesses
+[i] Fingerprinting OS and services on 192.168.1.0/24...
 
 [*] DNS Enumeration
-[i] Resolving DNS records for 192.168.1.100...
-[i] A Records:
-Server:		192.168.1.1
-Address:	192.168.1.1#53
-
-Name:	192.168.1.100
-Address: 192.168.1.100
-
-[i] Reverse DNS Lookup:
-100.1.168.192.in-addr.arpa	name = router.local.
+[i] Resolving DNS records for 192.168.1.0/24...
 
 [*] WHOIS Lookup - Ownership Information
-[i] WHOIS information for IP 192.168.1.100:
+[i] WHOIS information for domain 192.168.1.0/24:
 netrange:      192.168.0.0 - 192.168.255.255
 netname:       PRIVATE-ADDRESS-CBLK-RFC1918-RESERVED
-nettype:       RESERVED
-country:       US
-comment:       This block is reserved for use in private networks
 
 [*] Traceroute - Identifying Network Path to Target
-[i] Tracing path to 192.168.1.100...
-traceroute to 192.168.1.100 (192.168.1.100), 15 hops max, 60 byte packets
- 1  gateway.local (192.168.1.1)  0.234 ms  0.198 ms  0.176 ms
- 2  192.168.1.100 (192.168.1.100)  0.421 ms  0.398 ms  0.376 ms
+[i] Tracing path to 192.168.1.0/24...
 
 [*] SSL/TLS Certificate Enumeration
-[i] Checking SSL/TLS certificates for 192.168.1.100...
-[+] HTTPS port 443 is open
-subject=CN = 192.168.1.100
-issuer=CN = 192.168.1.100
-notBefore=Jan 15 10:30:22 2024 GMT
-notAfter=Jan 14 10:30:22 2025 GMT
+[i] Checking SSL/TLS certificates for 192.168.1.0/24...
 
 [*] Subnet Analysis
-[i] Analyzing subnet information for 192.168.1.100:
-Address:   192.168.1.100
-Netmask:   255.255.255.0 = 24
-Wildcard:  0.0.0.255
-Network:   192.168.1.0/24
-HostMin:   192.168.1.1
-HostMax:   192.168.1.254
-Hosts/Net: 254
+[i] Analyzing subnet information for 192.168.1.0/24...
 
-[+] Results saved to ./enum_results/enum_20240115_143022.txt
+[*] Local Network Discovery - ARP Scanning
+[i] Discovering hosts on the local network...
+[i] Running ARP scan on local network...
 
 ════════════════════════════════════════════
 [+] Enumeration Complete
@@ -171,111 +107,113 @@ Next Steps:
  1. Review findings very carefully
  2. Prioritize services by criticality
  3. Research known vulnerabilities for identified services
- 4. Plan further penetration testing or security assessment based on findings
+ 4. Plan further penetration testing based on findings
 
 SECURITY REMINDER:
- - Only test networks you own or have written permission to test.
- - Document all findings and methodologies
- - Respect responsible disclosure practices
-══════════════════════════════════════════════
+ • Only test networks you own or have written permission to test
+ • Document all findings and methodologies
+ • Respect responsible disclosure practices
+════════════════════════════════════════════
 ```
 
-## What Each Module Does
+## Modules
 
-### Ping Sweep
-Tests if hosts are online using ICMP packets, useful for:
-- Identifying active targets
-- Network baseline assessment
-- Firewall analysis (ICMP filtering)
+| Module | Purpose |
+|--------|---------|
+| **Ping Sweep** | Identify live hosts using ICMP packets |
+| **Port Scanning** | Discover open ports and services |
+| **OS Detection** | Fingerprint OS and service versions |
+| **DNS Enumeration** | Resolve hostnames and records |
+| **WHOIS** | Check IP/domain ownership |
+| **Traceroute** | Map network path to target |
+| **SSL/TLS** | Extract certificate information |
+| **Subnet Analysis** | Calculate network ranges |
+| **ARP Discovery** | Find hosts on local network |
 
-### Port Scanning
-Uses Nmap to identify open ports and running services, which shows:
-- Service discovery
-- Version detection
-- Vulnerability assessment starting point
+## Reconnaissance Methodology
 
-### OS Detection
-Fingerprints operating systems based on network behavior, used for:
-- Understanding target infrastructure
-- Identifying mismatched/unpatched systems
-- Planning OS-specific assessments
+This script automates reconnaissance, the (first phase) of **authorized** penetration testing:
 
-### DNS Enumeration
-Resolves hostnames, A records, reverse DNS, shows:
-- DNS infrastructure
-- Virtual hosting
-- Subdomain information
-
-### WHOIS Lookup
-Identifies IP and domain ownership, shows:
-- Organization information
-- Registered contact details
-- Network assignment details
-
-### Traceroute
-Maps the network path to the target which reveals:
-- Intermediate hops
-- Network topology
-- Firewall/proxy presence
-
-### SSL/TLS Analysis
-Examines HTTPS certificates, which extracts:
-- Certificate issuer and subject
-- Validity dates
-- Potential certificate mismatches
-
-### Subnet Analysis
-Calculates network information which helps with:
-- Understanding network ranges
-- CIDR planning
-- Subnet hierarchy
-
-## Real-World Application
-
-This script reflects techniques used in legitimate penetration testing:
-- **Reconnaissance Phase** - First step of authorized security assessments
-- **Network Mapping** - Understanding target infrastructure
-- **Service Discovery** - Identifying potential vulnerabilities
-- **Vulnerability Assessment** - Foundation for targeted testing
-
-During my penetration testing internship at A-Secure, these enumeration techniques were fundamental to every engagement. This script automates the most common reconnaissance tasks, before moving
-to the next step.
+1. **Information Gathering** - Collect data about the target
+2. **Network Mapping** - Understand infrastructure and topology
+3. **Service Enumeration** - Identify running services and versions
+4. **Vulnerability Research** - Assess known vulnerabilities (manual follow-up)
 
 ## Results Storage
 
-Results are automatically saved to:
-```
-./enum_results/enum_YYYYMMDD_HHMMSS.txt
-```
+Timestamped reports saved to: `./enum_results/enum_YYYYMMDD_HHMMSS.txt`
 
-Each scan creates a timestamped file containing:
-- Target information
-- Nmap comprehensive scan results
-- Identified open ports
-- Service versions
+Includes:
+- Comprehensive Nmap scan results
+- Open ports and service versions
+- DNS records and WHOIS information
+- SSL/TLS certificate details
+- Subnet calculations
 
 ## Advanced Usage
 
-**Faster scan (common ports only):**
 ```bash
-./network_enumeration.sh 192.168.1.0/24
+# Full port scan (all 65535 ports)
+nmap -sV -p- -O 192.168.1.1
+
+# Aggressive scan (more detection, more traffic)
+nmap -A -T4 192.168.1.1
+
+# UDP service scanning
+nmap -sU -p 53,161,162 192.168.1.1
+
+# Output to file
+nmap -sV -oN output.txt 192.168.1.1
 ```
 
-**Manual Nmap for comprehensive results:**
-```bash
-# All ports with service detection
-nmap -sV -p- -O 192.168.1.100
+## Limitations
 
-# Aggressive scan (use with permission)
-nmap -A -T4 192.168.1.100
+- **Reconnaissance only** - Does not exploit vulnerabilities, strictly a reconnaissance tool
+- **Easily detected** - Generates significant network traffic and logs
+- **OS detection accuracy** - Results are close estimates
+- **Network dependent** - Requires connectivity and permissions
+- **Rate limiting** - Some networks block excessive scanning
 
-# UDP scan
-nmap -sU -p 53,161,162 192.168.1.100
+## Security Considerations
+
+**Only test authorized targets** - Legal liability is real  
+**Document everything** - Keep methodology and findings records  
+**Responsible disclosure** - Report vulnerabilities through proper channels  
+**Be aware of IDS/IPS** - Monitoring systems will detect scans  
+**Consider business impact** - Large scans can affect network performance  
+
+## Code Organization
+
+```
+UTILITY FUNCTIONS
+    print_*() - Output formatting
+    check_command() - Dependency checking
+    validate_ip() - Input validation
+    validate_target() - Target validation
+
+ENUMERATION FUNCTIONS
+    enum_ping_sweep()
+    enum_port_scan()
+    enum_os_detection()
+    enum_traceroute()
+    enum_dns_lookup()
+    enum_whois()
+    enum_subnet_analysis()
+    enum_ssl_tls()
+    enum_local_network()
+
+REPORTING FUNCTIONS
+    setup_output() - Initialize output
+    save_results() - Log findings
+    print_summary() - Results summary
+
+MAIN EXECUTION
+    main() - Orchestrate workflow
 ```
 
 ## Troubleshooting
 
-**"command not found: nmap"**
+**Missing Nmap:**
 ```bash
 # Ubuntu/Debian
 sudo apt-get install nmap
@@ -284,48 +222,22 @@ sudo apt-get install nmap
 brew install nmap
 ```
 
-**"Permission denied" on ports < 1024**
+**Permission denied (requires root for some operations):**
 ```bash
-# Some scanning requires root
-sudo ./network_enumeration.sh 192.168.1.100
+sudo ./network_enumeration.sh 192.168.1.1
 ```
 
-**Script won't run?**
+**Script won't run:**
 ```bash
-# Make sure it's executable
 chmod +x network_enumeration.sh
 ```
 
-## Security Considerations
-
-**Legal Usage Only** - Only test networks you own or have written permission to test  
-**Documentation** - Keep records of all testing and results  
-**Responsible Disclosure** - If you find vulnerabilities, report them properly  
-**Network Load** - Large scans can impact network performance  
-**Stealth Considerations** - These scans generate significant network traffic and will be logged and detected 
-
-## Limitations
-
-- **Not an Exploit Tool** - Discovers open services but does not exploit them
-- **Firewall/IDS Evasion** - Basic scans, easily detected by IDS or Firewalls
-- **Accuracy** - OS detection is often inaccurate, use as an estimate only
-- **Network Dependent** - Requires network connectivity and appropriate permissions
-- **Rate Limiting** - Some networks rate-limit or block excessive scanning
-
-## Ethical Hacking Context
-
-This tool demonstrates understanding of:
-- Network fundamentals (IP, DNS, TCP/IP)
-- Reconnaissance methodology
-- Common penetration testing techniques
-- Security assessment workflows
-- Responsible disclosure practices
-
 ## Author
 
-Hamzah Khaldun Alayyan  
-[LinkedIn](www.linkedin.com/in/hamzah-alayyan-12b078334) | [GitHub](https://github.com/HamzahAlayyan)
+**Hamzah Khaldun Alayyan**  
+BSc Computer Science (Cyber Security), Newcastle University  
+CompTIA Security+, INE eJPT Certified  
 
 ---
 
-**Reminder:** Please use this tool ethically and legally.
+**Remember:** Please use this tool legally and ethically. Failure to do so is a crime.

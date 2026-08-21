@@ -66,19 +66,30 @@ check_command() {
 
 validate_ip() {
     local ip=$1
-    if [[ $ip =~ ^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$ ]]; then
-        return 0
-    else
+    if ! [[ $ip =~ ^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$ ]]; then
         return 1
-    fi 
+    fi
+
+    local IFS='.'
+    local -a octets=($ip)
+
+    for octet in "${octets[@]}"; do
+        if [[ $octet -gt 255 ]]; then
+            return 1
+        fi
+    done
+    return 0
 }
 
 validate_target() {
+    if [[ $TARGET == *"/"* ]]; then
+        return 0
+    fi
+
     if ! validate_ip "$TARGET"; then
-        # Try to resolve hostname 
         if ! host "$TARGET" &> /dev/null; then
-            print_error "Invalid target: $TARGET. Please provide a valid IP address or hostname."
-            return 1
+        print_error "Invalid Target: $TARGET, please provide a valid IP address, CIDR, or hostname."
+        return 1
         fi
     fi
     return 0
@@ -232,16 +243,42 @@ save_results() {
         echo " Date: $(date)"
         echo "=============================================="
         echo ""
-    } > "$RESULTS_FILE"
-
-    # Appends Nmap results
-    {
-        echo "=== NMAP RESULTS ==="
-        nmap -sV -O --open "$TARGET" 2>/dev/null
+        echo "=== PING SWEEP ==="
+        enum_ping_sweep
         echo ""
-        echo "=== OPEN PORTS ==="
+        echo "=== PORT SCAN RESULTS ==="
+        nmap -p 21,22,23,25,53,80,110,143,443,445,3306,3389,5432,5984,8080,8443 -sV --open "$TARGET" 2>/dev/null
+        echo ""
+        echo "=== OS DETECTION ==="
+        nmap -O -sV "$TARGET" 2>/dev/null | grep -E "Running|Nmap scan|Service|OS"
+        echo ""
+        echo "=== DNS ENUMERATION ==="
+        nslookup "$TARGET" 2>/dev/null
+        echo ""
+        echo "=== WHOIS LOOKUP ==="
+        whois "$TARGET" 2>/dev/null | head -20
+        echo ""
+        echo "=== TRACEROUTE ==="
+        traceroute -m 15 "$TARGET" 2>/dev/null
+        echo ""
+        echo "=== SSL/TLS CERTIFICATES ==="
+        if nmap -p 443 --open "$TARGET" 2>/dev/null | grep -q "443/tcp"; then
+            echo | openssl s_client -connect "$TARGET:443" -servername "$TARGET" 2>/dev/null | grep -E "subject=|issuer=|notBefore=|notAfter="
+        fi
+        echo ""
+        echo "=== SUBNET ANALYSIS ==="
+        if command -v ipcalc &> /dev/null; then
+            ipcalc "$TARGET" 2>/dev/null
+        fi
+        echo ""
+        echo "=== ARP DISCOVERY ==="
+        if command -v arp-scan &> /dev/null; then
+            arp-scan --localnet 2>/dev/null
+        fi
+        echo ""
+        echo "=== ALL OPEN PORTS ==="
         nmap -p- --open "$TARGET" 2>/dev/null | grep open
-    } >> "$RESULTS_FILE"
+    } > "$RESULTS_FILE"
 
     print_success "Results saved to $RESULTS_FILE"
 }
@@ -317,6 +354,7 @@ main() {
     enum_traceroute
     enum_ssl_tls
     enum_subnet_analysis
+    enum_local_network
 
     # Save results
     save_results

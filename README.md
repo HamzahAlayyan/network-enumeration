@@ -35,7 +35,7 @@ Additional:
 ```bash
 git clone https://github.com/HamzahAlayyan/network-enumeration.git
 cd network-enumeration
-chmod +x network_enumeration.sh
+chmod +x Networkscan.sh
 
 # Install dependencies (Ubuntu/Debian)
 sudo apt-get install nmap whois dnsutils traceroute arp-scan ipcalc
@@ -45,13 +45,13 @@ sudo apt-get install nmap whois dnsutils traceroute arp-scan ipcalc
 
 ```bash
 # Single host
-./network_enumeration.sh 192.168.1.1
+./Networkscan.sh 192.168.1.1
 
 # Network range (CIDR)
-./network_enumeration.sh 192.168.1.0/24
+./Networkscan.sh 192.168.1.0/24
 
 # Domain name
-./network_enumeration.sh example.com
+./Networkscan.sh example.com
 ```
 
 ## Example Output
@@ -233,12 +233,12 @@ brew install nmap
 
 **Permission denied (requires root for some operations):**
 ```bash
-sudo ./network_enumeration.sh 192.168.1.1
+sudo ./Networkscan.sh 192.168.1.1
 ```
 
 **Script won't run:**
 ```bash
-chmod +x network_enumeration.sh
+chmod +x Networkscan.sh
 ```
 
 ## Author

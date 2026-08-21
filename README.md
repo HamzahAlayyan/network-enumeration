@@ -1,4 +1,4 @@
-# Network Enumeration Script
+# Network Reconnaissance and Enumeration Script
 
 A concise Bash script for automated network reconnaissance and enumeration. Designed for penetration testing, security assessments, lab exercises and educational purposes.
 
@@ -20,11 +20,20 @@ A concise Bash script for automated network reconnaissance and enumeration. Desi
 ## Installation
 
 **Requirements:**
-- Bash 4.0+, Linux/Unix (Kali, Ubuntu, macOS, etc.)
-- Nmap, bind-utils, whois
+- Bash 4.0+
+- Linux/Unix
+- Nmap
+- whois
+- dnsutils
+
+Additional:
+- traceroute
+- arp-scan
+- ipcalc
+- openssl
 
 ```bash
-git clone https://github.com/yourusername/network-enumeration.git
+git clone https://github.com/HamzahAlayyan/network-enumeration.git
 cd network-enumeration
 chmod +x network_enumeration.sh
 
@@ -144,7 +153,7 @@ This script automates reconnaissance, the (first phase) of **authorized** penetr
 Timestamped reports saved to: `./enum_results/enum_YYYYMMDD_HHMMSS.txt`
 
 Includes:
-- Comprehensive Nmap scan results
+- Nmap scan results
 - Open ports and service versions
 - DNS records and WHOIS information
 - SSL/TLS certificate details
